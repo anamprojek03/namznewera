@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lisensi Saya — NAMZ XITER</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --void: #04060f; --surface: #0c1220; --accent: #00d4ff;
+            --border: #1c2a40; --text: #e8f0fc; --accent3: #00ff9d;
+        }
+        body { background: var(--void); color: var(--text); font-family: 'JetBrains Mono', monospace; padding: 20px; }
+        .container { max-width: 600px; margin: 50px auto; }
+        h2 { font-family: 'Rajdhani'; color: var(--accent); text-align: center; margin-bottom: 30px; letter-spacing: 2px; }
+        
+        .license-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+        .license-card::before {
+            content: "PAID";
+            position: absolute;
+            top: 10px; right: -25px;
+            background: var(--accent3);
+            color: var(--void);
+            padding: 5px 30px;
+            transform: rotate(45deg);
+            font-size: 0.7rem; font-weight: bold;
+        }
+        .prod-name { color: var(--accent); font-weight: bold; font-size: 1.1rem; margin-bottom: 10px; }
+        .key-box {
+            background: #000;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px dashed var(--accent3);
+            color: var(--accent3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px 0;
+        }
+        .btn-copy { background: none; border: 1px solid var(--accent3); color: var(--accent3); padding: 4px 8px; cursor: pointer; font-size: 0.7rem; }
+        .info-row { font-size: 0.8rem; color: #6b80a0; margin-top: 5px; }
+        .empty-state { text-align: center; color: #3d5070; margin-top: 50px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2 id="welcomeText">LISENSI SAYA</h2>
+    <div id="licenseList">
+        <p style="text-align: center;">Memuat data...</p>
+    </div>
+    <a href="index.html" style="display:block; text-align:center; color:var(--accent); margin-top:30px; text-decoration:none;">← Kembali ke Panel</a>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    const user = localStorage.getItem('namz_user');
+    if (!user) {
+        alert("Silakan login terlebih dahulu!");
+        window.location.href = 'auth.html';
+        return;
+    }
+
+    document.getElementById('welcomeText').textContent = `LISENSI ${user.toUpperCase()}`;
+
+    try {
+        const res = await fetch('/api/db');
+        const db = await res.json();
+        const orders = db.orders || [];
+
+        // Filter: Hanya tampilkan pesanan milik user yang sedang login
+        const myOrders = orders.filter(o => o.buyer.toLowerCase() === user.toLowerCase());
+
+        const listDiv = document.getElementById('licenseList');
+        
+        if (myOrders.length === 0) {
+            listDiv.innerHTML = `<div class="empty-state">Kamu belum memiliki lisensi apapun.</div>`;
+            return;
+        }
+
+        listDiv.innerHTML = myOrders.map(o => `
+            <div class="license-card">
+                <div class="prod-name">${o.productName}</div>
+                <div class="info-row">Paket: ${o.packageLabel}</div>
+                <div class="key-box">
+                    <span id="key-${o.id}">${o.license}</span>
+                    <button class="btn-copy" onclick="copyKey('${o.license}')">COPY</button>
+                </div>
+                <div class="info-row">Dibeli pada: ${new Date(o.createdAt).toLocaleDateString('id-ID')}</div>
+            </div>
+        `).join('');
+
+    } catch (err) {
+        alert("Gagal memuat database!");
+    }
+});
+
+function copyKey(text) {
+    navigator.clipboard.writeText(text);
+    alert("Lisensi tersalin!");
+}
+</script>
+</body>
+</html>

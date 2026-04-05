@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beli Produk — NAMZ XITER</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --void:#04060f;--deep:#070c1a;--surface:#0c1220;--card:#101828;--raised:#141f30;
+  --border:#1c2a40;--border2:#243350;--accent:#00d4ff;--accent2:#0099cc;
+  --accent3:#00ff9d;--warn:#ff6b35;--text:#e8f0fc;--muted:#6b80a0;--dim:#3d5070;
+  --font-head:'Rajdhani',sans-serif;--font-body:'Inter',sans-serif;--font-mono:'JetBrains Mono',monospace;
+}
+body{background:var(--void);color:var(--text);font-family:var(--font-body);min-height:100vh;padding-bottom:80px}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,212,255,0.012) 2px,rgba(0,212,255,0.012) 4px);pointer-events:none;z-index:0}
+
+nav{background:rgba(4,6,15,0.95);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;height:56px;display:flex;align-items:center;padding:0 20px;justify-content:space-between}
+.logo-text{font-family:var(--font-head);font-size:20px;font-weight:700;letter-spacing:3px;color:var(--accent)}
+.logo-text span{color:var(--text);opacity:.7}
+.back-btn{font-family:var(--font-mono);font-size:11px;letter-spacing:2px;color:var(--muted);text-decoration:none;display:flex;align-items:center;gap:6px;transition:.2s}
+.back-btn:hover{color:var(--accent)}
+
+.container{max-width:640px;margin:0 auto;padding:20px 16px}
+
+.prod-banner{background:var(--card);border:1px solid var(--border);margin-bottom:20px;overflow:hidden}
+.prod-banner-top{height:140px;display:flex;align-items:center;justify-content:center;font-size:64px;position:relative}
+.prod-banner-body{padding:16px;border-top:1px solid var(--border)}
+.prod-title{font-family:var(--font-head);font-size:24px;font-weight:700;letter-spacing:3px;color:var(--accent)}
+.prod-cat{font-family:var(--font-mono);font-size:10px;letter-spacing:3px;color:var(--muted);margin-top:2px}
+
+.info-box{background:var(--card);border:1px solid var(--border);margin-bottom:20px}
+.info-box-head{background:var(--accent);color:var(--void);font-family:var(--font-head);font-size:12px;font-weight:700;letter-spacing:3px;padding:8px 16px}
+.info-box-body{padding:16px;font-family:var(--font-mono);font-size:12px;line-height:2.2;color:var(--muted);white-space:pre-line}
+.info-box-body span{color:var(--accent3)}
+
+.step-label{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.step-num{background:var(--accent);color:var(--void);font-family:var(--font-head);font-size:13px;font-weight:700;width:26px;height:26px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step-text{font-family:var(--font-head);font-size:14px;font-weight:700;letter-spacing:2px;color:var(--text)}
+
+.card-sec{background:var(--card);border:1px solid var(--border);padding:16px;margin-bottom:20px}
+.inp{width:100%;background:var(--deep);border:1px solid var(--border2);color:var(--text);padding:11px 14px;font-family:var(--font-mono);font-size:12px;outline:none;margin-bottom:10px;letter-spacing:1px;transition:.2s}
+.inp:last-child{margin-bottom:0}
+.inp:focus{border-color:var(--accent)}
+.inp::placeholder{color:var(--dim)}
+
+.pkg-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.pkg-card{background:var(--deep);border:1px solid var(--border2);padding:14px 10px;cursor:pointer;text-align:center;transition:.2s;position:relative}
+.pkg-card:hover{border-color:var(--accent)}
+.pkg-card.on{border-color:var(--accent);background:rgba(0,212,255,.07)}
+.pkg-card.on::after{content:'✓';position:absolute;top:4px;right:6px;font-size:10px;color:var(--accent3)}
+.pkg-day{font-family:var(--font-head);font-size:16px;font-weight:700;letter-spacing:1px}
+.pkg-price{font-family:var(--font-mono);font-size:12px;color:var(--accent3);margin-top:4px}
+.pkg-stock{font-family:var(--font-mono);font-size:9px;color:var(--muted);margin-top:2px}
+.pkg-empty{font-size:9px;color:var(--warn);margin-top:2px}
+
+.pay-note{background:rgba(0,212,255,.05);border:1px solid rgba(0,212,255,.15);padding:12px 14px;margin-bottom:20px;font-family:var(--font-mono);font-size:11px;color:var(--muted);line-height:1.8}
+.pay-note strong{color:var(--accent)}
+
+.bottom-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(7,12,26,.97);border-top:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;z-index:200;backdrop-filter:blur(10px)}
+.total-wrap{}
+.total-lbl{font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:var(--dim)}
+.total-val{font-family:var(--font-head);font-size:22px;font-weight:700;color:var(--accent3)}
+.buy-btn{background:var(--accent);color:var(--void);border:none;font-family:var(--font-head);font-size:15px;font-weight:700;letter-spacing:2px;padding:12px 28px;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:8px}
+.buy-btn:hover{background:var(--accent2)}
+.buy-btn:disabled{background:var(--dim);cursor:not-allowed}
+
+/* MODAL */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:999;align-items:center;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:var(--deep);border:1px solid var(--border2);max-width:440px;width:92%;padding:0;overflow:hidden}
+.modal-head{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 20px;font-family:var(--font-head);font-size:16px;font-weight:700;letter-spacing:2px;color:var(--accent);display:flex;justify-content:space-between;align-items:center}
+.modal-body{padding:20px}
+.order-id-tag{font-family:var(--font-mono);font-size:10px;letter-spacing:2px;color:var(--muted);margin-bottom:16px}
+
+/* QRIS BOX */
+.qris-wrap{background:#fff;border-radius:6px;width:220px;height:220px;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+.qris-wrap svg{width:100%;height:100%}
+
+.amount-big{text-align:center;font-family:var(--font-head);font-size:26px;font-weight:700;color:var(--accent3);margin-bottom:2px}
+.amount-note{text-align:center;font-family:var(--font-mono);font-size:10px;letter-spacing:2px;color:var(--muted);margin-bottom:14px}
+
+.timer-wrap{background:var(--surface);border:1px solid var(--border);padding:12px;text-align:center;margin-bottom:12px}
+.timer-lbl{font-family:var(--font-mono);font-size:9px;letter-spacing:3px;color:var(--dim);margin-bottom:4px}
+.timer-val{font-family:var(--font-mono);font-size:28px;font-weight:700;color:var(--warn);letter-spacing:6px}
+
+.status-tag{text-align:center;font-family:var(--font-mono);font-size:11px;letter-spacing:2px;padding:8px;margin-bottom:14px}
+.status-tag.wait{color:var(--warn);background:rgba(255,107,53,.08);border:1px solid rgba(255,107,53,.2)}
+.status-tag.check{color:var(--accent);background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.2)}
+.status-tag.done{color:var(--accent3);background:rgba(0,255,157,.08);border:1px solid rgba(0,255,157,.2)}
+.status-tag.fail{color:#ff4444;background:rgba(255,68,68,.08);border:1px solid rgba(255,68,68,.2)}
+
+.modal-btns{display:flex;gap:8px}
+.btn-cancel{flex:1;background:transparent;border:1px solid var(--border2);color:var(--muted);padding:10px;font-family:var(--font-head);font-size:13px;font-weight:600;letter-spacing:1px;cursor:pointer;transition:.2s}
+.btn-cancel:hover{border-color:var(--warn);color:var(--warn)}
+.btn-konfirm{flex:2;background:var(--accent3);color:var(--void);border:none;padding:10px;font-family:var(--font-head);font-size:14px;font-weight:700;letter-spacing:2px;cursor:pointer;transition:.2s}
+.btn-konfirm:hover{opacity:.85}
+.btn-konfirm:disabled{background:var(--dim);cursor:not-allowed;color:var(--muted)}
+
+/* SUCCESS SCREEN */
+.success-screen{display:none;background:var(--deep);border:1px solid var(--border2);max-width:440px;width:92%;padding:32px;text-align:center}
+.success-screen.show{display:block}
+.success-glyph{font-size:56px;margin-bottom:16px}
+.success-title{font-family:var(--font-head);font-size:26px;font-weight:700;letter-spacing:3px;color:var(--accent3);margin-bottom:8px}
+.success-msg{font-family:var(--font-mono);font-size:12px;color:var(--muted);line-height:2;margin-bottom:20px}
+.license-display{background:var(--surface);border:1px solid var(--accent3);padding:16px;margin-bottom:16px}
+.license-lbl{font-family:var(--font-mono);font-size:9px;letter-spacing:3px;color:var(--muted);margin-bottom:6px}
+.license-val{font-family:var(--font-mono);font-size:18px;font-weight:700;color:var(--accent3);letter-spacing:4px;word-break:break-all}
+.copy-btn{background:var(--card);border:1px solid var(--border2);color:var(--muted);padding:6px 14px;font-family:var(--font-mono);font-size:10px;letter-spacing:2px;cursor:pointer;margin-top:8px;display:block;width:100%;transition:.2s}
+.copy-btn:hover{border-color:var(--accent3);color:var(--accent3)}
+.home-btn{background:var(--accent);color:var(--void);border:none;font-family:var(--font-head);font-size:15px;font-weight:700;letter-spacing:2px;padding:12px 32px;cursor:pointer;margin-top:10px;width:100%;transition:.2s}
+.home-btn:hover{background:var(--accent2)}
+
+/* LOADING OVERLAY */
+.loading-overlay{display:none;position:fixed;inset:0;background:rgba(4,6,15,.95);z-index:9999;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+.loading-overlay.on{display:flex}
+.spinner{width:40px;height:40px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-txt{font-family:var(--font-mono);font-size:12px;letter-spacing:3px;color:var(--muted)}
+
+@media(max-width:480px){.pkg-grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="loading-txt">MEMPROSES...</div>
+</div>
+
+<nav>
+  <a href="index.html" class="back-btn">← KEMBALI</a>
+  <div class="logo-text">NAMZ<span> XITER</span></div>
+  <div style="width:80px"></div>
+</nav>
+
+<div class="container">
+  <div class="prod-banner" id="prodBanner">
+    <div class="prod-banner-top" id="prodThumb"></div>
+    <div class="prod-banner-body">
+      <div class="prod-title" id="prodTitle">LOADING...</div>
+      <div class="prod-cat" id="prodCat"></div>
+    </div>
+  </div>
+
+  <div class="info-box">
+    <div class="info-box-head">INFORMASI PRODUK</div>
+    <div class="info-box-body" id="prodDesc"></div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="step-label">
+    <div class="step-num">1</div>
+    <div class="step-text">DATA PEMBELI</div>
+  </div>
+  <div class="card-sec">
+    <input class="inp" id="buyName" type="text" placeholder="Nama Anda (wajib)">
+    <input class="inp" id="buyWa" type="text" placeholder="Nomor WhatsApp (opsional)">
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step-label">
+    <div class="step-num">2</div>
+    <div class="step-text">PILIH PAKET</div>
+  </div>
+  <div class="card-sec">
+    <div class="pkg-grid" id="pkgGrid"></div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step-label">
+    <div class="step-num">3</div>
+    <div class="step-text">PEMBAYARAN</div>
+  </div>
+  <div class="pay-note">
+    <strong>QRIS OTOMATIS</strong> — Bayar dengan scan QRIS dari aplikasi apapun (GoPay, OVO, DANA, BCA, Mandiri, dll).<br>
+    Lisensi akan dikirim <strong>OTOMATIS</strong> setelah pembayaran terkonfirmasi sistem.
+  </div>
+
+</div>
+
+<div class="bottom-bar">
+  <div class="total-wrap">
+    <div class="total-lbl">TOTAL BAYAR</div>
+    <div class="total-val" id="totalVal">Rp 0</div>
+  </div>
+  <button class="buy-btn" id="buyBtn" onclick="startCheckout()">
+    BELI SEKARANG ▶
+  </button>
+</div>
+
+<!-- PAYMENT MODAL -->
+<div class="modal-bg" id="payModal">
+  <div class="modal" id="modalContent">
+    <div class="modal-head">
+      <span>PEMBAYARAN QRIS</span>
+      <span style="font-size:10px;font-family:var(--font-mono);color:var(--muted)" id="modalOrderId"></span>
+    </div>
+    <div class="modal-body">
+      <div class="amount-big" id="modalAmount"></div>
+      <div class="amount-note">SCAN QRIS — BAYAR TEPAT NOMINAL</div>
+      <div class="qris-wrap">
+        <svg id="qrisSvg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
+      <div class="timer-wrap">
+        <div class="timer-lbl">BATAS WAKTU PEMBAYARAN</div>
+        <div class="timer-val" id="timerVal">15:00</div>
+      </div>
+      <div class="status-tag wait" id="statusTag">⏳ MENUNGGU PEMBAYARAN...</div>
+      <div class="modal-btns">
+        <button class="btn-cancel" onclick="cancelOrder()">BATAL</button>
+        <button class="btn-konfirm" id="konfirmBtn" onclick="confirmPayment()">✓ KONFIRMASI BAYAR</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="success-screen" id="successScreen">
+    <div class="success-glyph">✅</div>
+    <div class="success-title">PEMBAYARAN BERHASIL!</div>
+    <div class="success-msg" id="successMsg"></div>
+    <div class="license-display">
+      <div class="license-lbl">KODE LISENSI ANDA</div>
+      <div class="license-val" id="licenseVal"></div>
+      <button class="copy-btn" onclick="copyLicense()">[ COPY LISENSI ]</button>
+    </div>
+    <div style="font-family:var(--font-mono);font-size:10px;color:var(--dim);margin-bottom:12px;line-height:2">
+      Simpan kode lisensi di atas dengan aman.<br>
+      Hubungi admin jika ada kendala.
+    </div>
+    <button class="home-btn" onclick="window.location.href='index.html'">KEMBALI KE BERANDA</button>
+  </div>
+</div><script>
+/**
+ * NAMZ XITER — Product Detail & Payment Logic
+ */
+let product = null;
+let selectedPackage = null;
+let timerInterval = null;
+let pollInterval;
+
+// 1. INISIALISASI DATA
+async function initProduct() {
+    const prodId = localStorage.getItem('namz_product_id');
+    if (!prodId) return window.location.href = 'index.html';
+
+    try {
+        const res = await fetch('/api/db');
+        const db = await res.json();
+        product = db.products.find(p => p.id === prodId);
+
+        if (!product) return window.location.href = 'index.html';
+
+        renderUI();
+    } catch (err) {
+        console.error("Load error:", err);
+    }
+}
+// 2. RENDER TAMPILAN PRODUK
+function renderUI() {
+    document.getElementById('prodTitle').textContent = product.name;
+    document.getElementById('prodCat').textContent = `${product.platform} • ${product.category}`;
+    document.getElementById('prodBanner').style.background = product.color || '#00d4ff';
+    document.getElementById('prodDesc').textContent = product.desc || "Tidak ada deskripsi.";
+
+    // LOGIKA BARU: Cek apakah menggunakan gambar upload atau emoji
+    const thumbEl = document.getElementById('prodThumb');
+    if (product.image) {
+        // Jika ada gambar (Base64), tampilkan sebagai tag img
+        thumbEl.innerHTML = `<img src="${product.image}" style="width:100%; height:100%; object-fit:cover; border-radius:inherit;">`;
+        thumbEl.style.background = "transparent"; // Hilangkan background agar gambar bersih
+    } else {
+        // Jika tidak ada gambar, pakai emoji default
+        thumbEl.textContent = product.emoji || '🔥';
+    }
+
+    const pkgGrid = document.getElementById('pkgGrid');
+    pkgGrid.innerHTML = product.packages.map(pkg => `
+        <div class="pkg-card" onclick="selectPkg(this, '${pkg.id}')">
+            <div class="pkg-label">${pkg.label}</div>
+            <div class="pkg-price">Rp ${parseInt(pkg.price).toLocaleString('id')}</div>
+            <div class="pkg-stock">Tersedia: ${pkg.licenses ? pkg.licenses.length : 0}</div>
+        </div>
+    `).join('');
+}
+
+function selectPkg(el, id) {
+    document.querySelectorAll('.pkg-card').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    selectedPackage = product.packages.find(p => p.id === id);
+    document.getElementById('totalVal').textContent = `Rp ${parseInt(selectedPackage.price).toLocaleString('id')}`;
+}
+
+// 3. PROSES CHECKOUT (PEMBUATAN QRIS)
+async function startCheckout() {
+    const buyerName = document.getElementById('buyName').value.trim();
+    if (!buyerName) return alert("Masukkan Nama Anda!");
+    if (!selectedPackage) return alert("Pilih paket terlebih dahulu!");
+
+    // Tampilkan Overlay Loading
+    document.getElementById('loadingOverlay').classList.add('active');
+
+    try {
+        const res = await fetch('/api/pay', { // pakai /api/pay sesuai server.js
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+        productId: product.id,
+        packageId: selectedPackage.id,
+        buyerName: localStorage.getItem('namz_user') || 'Guest'
+    })
+});
+
+        const data = await res.json();
+        document.getElementById('loadingOverlay').classList.remove('active');
+
+        if (data.qr_url) {
+            showPaymentModal(data);
+        } else {
+            alert("Gagal membuat QRIS. Pastikan API Pakasir sudah benar di Admin.");
+        }
+    } catch (err) {
+        document.getElementById('loadingOverlay').classList.remove('active');
+        alert("Gagal terhubung ke server.");
+    }
+}
+
+// 4. TAMPILKAN MODAL PEMBAYARAN
+function showPaymentModal(data) {
+    document.getElementById('payModal').classList.add('active');
+    document.getElementById('modalOrderId').textContent = data.orderId;
+    document.getElementById('modalAmount').textContent = `Rp ${parseInt(selectedPackage.price).toLocaleString('id')}`;
+    
+    // Memasukkan QRIS ke SVG (Kita ganti isi SVG dengan Image agar mudah)
+    const qrisWrap = document.querySelector('.qris-wrap');
+    qrisWrap.innerHTML = `<img src="${data.qr_url}" style="width:100%; height:100%; border-radius:8px;">`;
+
+    startTimer(900); // 15 Menit
+    startPolling(data.orderId);
+}
+
+function startPolling(orderId) {
+    // Cek setiap 3 detik
+    pollInterval = setInterval(async () => {
+        try {
+            const res = await fetch(`/api/order-status/${orderId}`);
+            const data = await res.json();
+
+            if (data.status === 'SUCCESS') {
+                clearInterval(pollInterval);
+                clearInterval(timerInterval);
+                showSuccessScreen(data.license); // Tampilkan lisensi otomatis
+            }
+        } catch (err) {
+            console.error("Gagal cek status:", err);
+        }
+    }, 3000);
+}
+function showSuccessScreen(license) {
+    document.getElementById('modalContent').style.display = 'none';
+    document.getElementById('successScreen').classList.add('active');
+    document.getElementById('licenseVal').textContent = license;
+    document.getElementById('successMsg').innerHTML = `Pembayaran untuk <b>${product.name}</b> berhasil dikonfirmasi.`;
+}
+
+// 6. FUNGSI PENDUKUNG (TIMER, COPY, CANCEL)
+function startTimer(duration) {
+    let timer = duration, minutes, seconds;
+    if (timerInterval) clearInterval(timerInterval);
+    
+    timerInterval = setInterval(() => {
+        minutes = parseInt(timer / 60, 10);
+        seconds = parseInt(timer % 60, 10);
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        document.getElementById('timerVal').textContent = minutes + ":" + seconds;
+        if (--timer < 0) {
+            clearInterval(timerInterval);
+            cancelOrder();
+        }
+    }, 1000);
+}
+
+function cancelOrder() {
+    if (confirm("Batalkan pesanan ini?")) {
+        clearInterval(pollInterval);
+        clearInterval(timerInterval);
+        document.getElementById('payModal').classList.remove('active');
+    }
+}
+
+function copyLicense() {
+    const code = document.getElementById('licenseVal').textContent;
+    navigator.clipboard.writeText(code);
+    alert("Lisensi disalin!");
+}
+
+// Jalankan saat load
+document.addEventListener('DOMContentLoaded', initProduct);
+</script>
+</body>
+</html>

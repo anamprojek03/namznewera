@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NAMZ XITER — Panel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --void:#04060f;
+  --deep:#070c1a;
+  --surface:#0c1220;
+  --card:#101828;
+  --raised:#141f30;
+  --border:#1c2a40;
+  --border2:#243350;
+  --accent:#00d4ff;
+  --accent2:#0099cc;
+  --accent3:#00ff9d;
+  --warn:#ff6b35;
+  --text:#e8f0fc;
+  --muted:#6b80a0;
+  --dim:#3d5070;
+  --font-head:'Rajdhani',sans-serif;
+  --font-body:'Inter',sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+body{background:var(--void);color:var(--text);font-family:var(--font-body);min-height:100vh;overflow-x:hidden}
+
+/* SCANLINE OVERLAY */
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,212,255,0.015) 2px,rgba(0,212,255,0.015) 4px);pointer-events:none;z-index:0}
+
+.marquee-container {
+    width: 100%;
+    overflow: hidden;
+    background: rgba(0, 212, 255, 0.05);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 0;
+    margin: 15px 0;
+    display: flex;
+}
+
+.marquee-content {
+    display: flex;
+    white-space: nowrap;
+    animation: marquee-infinite 25s linear infinite;
+}
+
+.marquee-content span {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    padding-right: 50px; /* Jarak antar teks */
+}
+
+@keyframes marquee-infinite {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%); /* Geser setengah panjang kontainer teks */
+    }
+}
+/* =========================================
+   HERO BANNER (TRUE FULL WIDTH)
+   ========================================= */
+.hero {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--deep) 0%, var(--void) 100%);
+  padding: 0; /* Hapus semua padding agar mentok */
+  text-align: center;
+}
+
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 40px 40px;
+  opacity: .3;
+  z-index: 1;
+}
+
+.hero-banner-img {
+  width: 100vw; /* Menggunakan Viewport Width agar pasti selebar layar */
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  
+  display: block;
+  height: auto;
+  z-index: 2;
+  
+  /* Hilangkan batasan tinggi agar tidak terpotong */
+  max-height: none; 
+  
+  /* Menghilangkan sisa space di bawah gambar */
+  vertical-align: middle; 
+}
+
+.hero h1 {
+  font-family: var(--font-head);
+  font-size: clamp(28px, 6vw, 56px);
+  font-weight: 700;
+  letter-spacing: 6px;
+  position: relative;
+  line-height: 1.1;
+  margin: 30px 0 10px; /* Beri jarak atas setelah banner */
+  z-index: 3;
+}
+
+.hero-sub, .hero-badge {
+  position: relative;
+  z-index: 3;
+  margin-bottom: 20px;
+}
+/* NAV */
+nav{background:rgba(4,6,15,0.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:500;height:56px;display:flex;align-items:center;padding:0 20px;justify-content:space-between}
+.logo-text{font-family:var(--font-head);font-size:22px;font-weight:700;letter-spacing:3px;color:var(--accent)}
+.logo-text span{color:var(--text);opacity:.7}
+.nav-right{display:flex;align-items:center;gap:12px}
+.admin-link{font-family:var(--font-mono);font-size:10px;letter-spacing:2px;color:var(--muted);text-decoration:none;border:1px solid var(--border2);padding:4px 10px;border-radius:3px;transition:.2s}
+.admin-link:hover{color:var(--accent);border-color:var(--accent)}
+.ham-btn{background:none;border:none;color:var(--text);font-size:20px;cursor:pointer}
+
+/* HERO BANNER */
+.hero{position:relative;overflow:hidden;background:linear-gradient(180deg,var(--deep) 0%,var(--void) 100%);padding:50px 20px 40px;text-align:center}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:40px 40px;opacity:.3}
+.hero h1{font-family:var(--font-head);font-size:clamp(28px,6vw,56px);font-weight:700;letter-spacing:6px;position:relative;line-height:1.1}
+.hero h1 .c1{color:var(--accent)}
+.hero h1 .c2{color:var(--accent3)}
+.hero-sub{font-family:var(--font-mono);font-size:11px;letter-spacing:3px;color:var(--muted);margin-top:12px;position:relative}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.2);border-radius:2px;padding:4px 12px;font-family:var(--font-mono);font-size:10px;letter-spacing:2px;color:var(--accent);margin-top:16px;position:relative}
+.pulse-dot{width:6px;height:6px;border-radius:50%;background:var(--accent3);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+
+/* SECTION LABELS */
+.sec-head{display:flex;align-items:center;gap:12px;padding:32px 20px 16px;max-width:1400px;margin:0 auto}
+.sec-line{flex:1;height:1px;background:var(--border)}
+.sec-title{font-family:var(--font-head);font-size:13px;font-weight:600;letter-spacing:4px;color:var(--muted);white-space:nowrap}
+
+/* SEARCH + FILTER */
+.controls{max-width:1400px;margin:0 auto;padding:0 20px 20px;display:flex;flex-direction:column;gap:12px}
+.search-row{display:flex;gap:0;border:1px solid var(--border2)}
+.search-row input{flex:1;background:var(--card);border:none;color:var(--text);padding:10px 16px;font-family:var(--font-mono);font-size:12px;outline:none;letter-spacing:1px}
+.search-row input::placeholder{color:var(--dim)}
+.search-row button{background:var(--accent);border:none;width:44px;cursor:pointer;font-size:16px;transition:.2s}
+.search-row button:hover{background:var(--accent2)}
+.filter-row{display:flex;gap:6px;flex-wrap:wrap}
+.ftab{font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:2px;padding:6px 14px;border:1px solid var(--border2);background:transparent;color:var(--muted);cursor:pointer;transition:.2s}
+.ftab.on,.ftab:hover{background:var(--accent);color:var(--void);border-color:var(--accent)}
+
+/* PRODUCT GRID */
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1px;background:var(--border);max-width:1400px;margin:0 auto}
+.pcard{background:var(--card);cursor:pointer;position:relative;overflow:hidden;transition:.25s}
+.pcard:hover{background:var(--raised);transform:scale(1.01);z-index:2}
+.pcard-thumb{height:180px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.pcard-emoji{font-size:56px;filter:drop-shadow(0 0 20px currentColor)}
+.pcard-glow{position:absolute;inset:0;opacity:.15}
+.pcard-body{padding:14px 16px}
+.pcard-name{font-family:var(--font-head);font-size:17px;font-weight:700;letter-spacing:2px;margin-bottom:2px}
+.pcard-game{font-family:var(--font-mono);font-size:10px;letter-spacing:2px;color:var(--muted)}
+.pcard-price{font-family:var(--font-mono);font-size:12px;color:var(--accent3);margin-top:6px}
+.pcard-badge{position:absolute;top:10px;left:10px;font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2px;background:var(--void);border:1px solid var(--accent);color:var(--accent);padding:2px 8px}
+.pcard-plat{position:absolute;top:10px;right:10px;font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:1px;background:rgba(0,0,0,.7);border:1px solid var(--border2);color:var(--muted);padding:2px 8px}
+
+/* CORNER DECORATION */
+.pcard::after{content:'';position:absolute;bottom:0;right:0;width:24px;height:24px;border-top:1px solid var(--border2);border-left:1px solid var(--border2)}
+
+/* BENEFITS */
+.benefits{background:var(--deep);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:40px 20px;margin-top:40px}
+.ben-grid{display:grid;grid-template-columns:repeat(4,1fr);max-width:1000px;margin:20px auto 0;gap:0}
+.ben-item{padding:20px;border-right:1px solid var(--border);text-align:center}
+.ben-item:last-child{border-right:none}
+.ben-icon{font-size:24px;margin-bottom:8px}
+.ben-title{font-family:var(--font-head);font-size:14px;font-weight:700;letter-spacing:2px;color:var(--accent)}
+.ben-desc{font-size:11px;color:var(--muted);margin-top:4px}
+
+/* CONTACT */
+.contact{display:flex;justify-content:center;gap:12px;padding:30px 20px}
+.btn-wa,.btn-tg{display:inline-flex;align-items:center;gap:8px;border:none;padding:10px 24px;font-family:var(--font-head);font-size:14px;font-weight:700;letter-spacing:2px;cursor:pointer;transition:.2s}
+.btn-wa{background:#25d366;color:#fff}
+.btn-tg{background:#0088cc;color:#fff}
+.btn-wa:hover{background:#1da355}
+.btn-tg:hover{background:#006699}
+
+/* PAYMENT */
+.pay-sec{padding:24px 20px;text-align:center;border-top:1px solid var(--border)}
+.pay-title{font-family:var(--font-mono);font-size:10px;letter-spacing:4px;color:var(--muted);margin-bottom:16px}
+.pay-logos{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+.plogo{background:#fff;border-radius:6px;width:70px;height:42px;display:flex;align-items:center;justify-content:center;padding:6px;transition:.2s}
+.plogo:hover{transform:scale(1.06)}
+.plogo img{width:100%;height:100%;object-fit:contain}
+
+/* FOOTER */
+footer{text-align:center;padding:20px;font-family:var(--font-mono);font-size:10px;letter-spacing:3px;color:var(--dim);border-top:1px solid var(--border)}
+
+/* SIDEBAR */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:600}
+.sidebar{position:fixed;top:0;right:-320px;width:300px;height:100%;background:var(--deep);border-left:1px solid var(--border);z-index:700;transition:.35s cubic-bezier(.4,0,.2,1);padding:20px;overflow-y:auto}
+.sidebar.on{right:0}
+.sb-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+.sb-title{font-family:var(--font-head);font-size:18px;font-weight:700;letter-spacing:2px;color:var(--accent)}
+.sb-close{background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer}
+.sb-menu{display:flex;flex-direction:column;gap:10px}
+.sb-item{display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid var(--border);padding:14px;text-decoration:none;color:var(--text);transition:.2s}
+.sb-item:hover{border-color:var(--accent);background:var(--raised)}
+.sb-icon{width:42px;height:42px;border-radius:50%;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.sb-label{font-family:var(--font-head);font-size:14px;font-weight:600;letter-spacing:1px}
+.sb-auth{margin-top:24px;padding-top:20px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:10px}
+.btn-login{background:var(--accent);color:var(--void);border:none;padding:12px;font-family:var(--font-head);font-size:14px;font-weight:700;letter-spacing:2px;cursor:pointer;transition:.2s}
+.btn-login:hover{background:var(--accent2)}
+.btn-reg{background:transparent;border:1px solid var(--border2);color:var(--muted);padding:12px;font-family:var(--font-head);font-size:14px;font-weight:700;letter-spacing:2px;cursor:pointer}
+
+/* EMPTY STATE */
+.empty{text-align:center;padding:60px 20px;color:var(--dim);font-family:var(--font-mono);font-size:13px;letter-spacing:2px;grid-column:1/-1}
+
+@media(max-width:768px){.ben-grid{grid-template-columns:repeat(2,1fr)}.ben-item{border-bottom:1px solid var(--border)}.pgrid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.pgrid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="overlay" id="overlay" onclick="closeSB()"></div>
+<div class="sidebar" id="sidebar">
+  <div class="sb-head">
+    <div class="sb-title" id="sbTitle">MENU</div>
+    <button class="sb-close" onclick="closeSB()">✕</button>
+  </div>
+  <div class="sb-menu">
+    <a href="https://wa.me/6285741193887" target="_blank" class="sb-item">
+      <div class="sb-icon">📱</div>
+      <div class="sb-label">WhatsApp Admin</div>
+    </a>
+    <a href="https://t.me/namzxiter" target="_blank" class="sb-item">
+      <div class="sb-icon">✈️</div>
+      <div class="sb-label">Telegram Admin</div>
+    </a>
+  </div>
+  <div class="sb-auth" id="sbAuth"></div>
+</div>
+
+<nav>
+  <div class="logo-text">NAMZ<span> XITER</span></div>
+  <div class="nav-right">
+    <button class="ham-btn" onclick="openSB()">☰</button>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-grid"></div>
+  <img src="banner.jpg" alt="Namz Xiter Banner" class="hero-banner-img">
+  <h1><span class="c1">NAMZ</span> <span class="c2">XITER</span></h1>
+  <div class="hero-sub">PREMIUM DIGITAL PANEL — TRUSTED SINCE 2024</div>
+  <div class="hero-badge"><span class="pulse-dot"></span>OPEN 24 JAM — FAST RESPON</div>
+  <div class="marquee-container">
+    <div class="marquee-content">
+        <span>NAMZ NEWERA TRUSTED SINCE 2024 — ALL SAFE & OPEN 24 JAM • </span>
+        <span>NAMZ NEWERA TRUSTED SINCE 2024 — ALL SAFE & OPEN 24 JAM • </span>
+        <span>NAMZ NEWERA TRUSTED SINCE 2024 — ALL SAFE & OPEN 24 JAM • </span>
+        <span>NAMZ NEWERA TRUSTED SINCE 2024 — ALL SAFE & OPEN 24 JAM • </span>
+    </div>
+</div>
+</div>
+</div>
+
+<div class="sec-head"><div class="sec-line"></div><div class="sec-title">ALL PRODUCTS</div><div class="sec-line"></div></div>
+
+<div class="controls">
+  <div class="search-row">
+    <input type="text" id="searchInput" placeholder="// SEARCH PRODUCT..." oninput="applyFilters()">
+    <button>🔍</button>
+  </div>
+  <div class="filter-row" id="filterRow"></div>
+</div>
+
+<div class="pgrid" id="pgrid"></div>
+
+<div class="benefits">
+  <div class="sec-head" style="margin:0 auto;max-width:1000px"><div class="sec-line"></div><div class="sec-title">KEUNGGULAN KAMI</div><div class="sec-line"></div></div>
+  <div class="ben-grid">
+    <div class="ben-item"><div class="ben-icon">💲</div><div class="ben-title">HARGA MURAH</div><div class="ben-desc">Kompetitif &amp; transparan</div></div>
+    <div class="ben-item"><div class="ben-icon">⚡</div><div class="ben-title">PROSES KILAT</div><div class="ben-desc">Lisensi otomatis instan</div></div>
+    <div class="ben-item"><div class="ben-icon">🔒</div><div class="ben-title">AMAN &amp; TRUSTED</div><div class="ben-desc">Sistem terenkripsi</div></div>
+    <div class="ben-item"><div class="ben-icon">🕐</div><div class="ben-title">OPEN 24 JAM</div><div class="ben-desc">Siap melayani kapanpun</div></div>
+  </div>
+</div>
+
+<div class="contact">
+  <a href="https://wa.me/6285741193887" target="_blank" style="text-decoration:none">
+    <button class="btn-wa">📱 WHATSAPP</button>
+  </a>
+  <a href="https://t.me/namzxiter" target="_blank" style="text-decoration:none">
+    <button class="btn-tg">✈️ TELEGRAM</button>
+  </a>
+</div>
+
+<div class="pay-sec">
+  <div class="pay-title">PAYMENT METHOD</div>
+  <div class="pay-logos">
+    <div class="plogo"><img src="https://upload.wikimedia.org/wikipedia/commons/a/a2/Logo_QRIS.svg" alt="QRIS"></div>
+    <div class="plogo"><img src="https://upload.wikimedia.org/wikipedia/commons/7/72/Logo_dana_blue.svg" alt="DANA"></div>
+    <div class="plogo"><img src="https://upload.wikimedia.org/wikipedia/commons/8/86/Gopay_logo.svg" alt="GOPAY"></div>
+    <div class="plogo"><img src="https://upload.wikimedia.org/wikipedia/commons/e/eb/Logo_ovo_purple.svg" alt="OVO"></div>
+    <div class="plogo"><img src="https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg" alt="BCA"></div>
+    <div class="plogo"><img src="https://upload.wikimedia.org/wikipedia/commons/a/ad/Bank_Mandiri_logo_2016.svg" alt="MANDIRI"></div>
+  </div>
+</div>
+
+<footer>© 2026 NAMZ XITER • ALL RIGHTS RESERVED • POWERED BY MIDTRANS QRIS</footer>
+<script>
+/**
+ * NAMZ XITER — Official Frontend Script
+ * Terkoneksi penuh ke Node.js Backend
+ */
+
+let db = null;
+let activeFilter = 'ALL';
+
+// 1. AMBIL DATA DARI SERVER
+async function initAppData() {
+    try {
+        const res = await fetch('/api/db');
+        if (!res.ok) throw new Error('Gagal memuat database');
+        db = await res.json();
+        
+        // Bersihkan sisa-sisa localStorage lama agar tidak bentrok
+        localStorage.removeItem('namz_db'); 
+
+        buildFilters();
+        applyFilters();
+    } catch (err) {
+        console.error("Init Error:", err);
+        const grid = document.getElementById('pgrid');
+        if(grid) {
+            grid.innerHTML = `
+                <div class="empty" style="color:var(--danger)">
+                    // SERVER OFFLINE //
+                    <br><small>Jalankan "node server.js" di terminal kamu</small>
+                </div>`;
+        }
+    }
+}
+
+// 2. SIDEBAR & AUTH UI
+function updateSBAuth() {
+    const user = localStorage.getItem('namz_user');
+    const role = localStorage.getItem('namz_role');
+    const box = document.getElementById('sbAuth');
+    const title = document.getElementById('sbTitle');
+    
+    if (!box) return;
+
+    // Kontainer menu dinamis
+    let dynamicMenu = document.getElementById('dynamicMenuContainer');
+    if (!dynamicMenu) {
+        dynamicMenu = document.createElement('div');
+        dynamicMenu.id = 'dynamicMenuContainer';
+        box.parentNode.insertBefore(dynamicMenu, box);
+    }
+
+    if (user) {
+        title.textContent = user.toUpperCase();
+        let menuHTML = `
+            <a href="cek-lisensi.html" class="sb-item">
+                <div class="sb-icon">📦</div><div class="sb-label">Lisensi Saya</div>
+            </a>
+        `;
+
+        if (role === 'admin') {
+            menuHTML += `
+                <a href="admin.html" class="sb-item" style="border:1px solid var(--accent); color:var(--accent); margin-top:10px;">
+                    <div class="sb-icon">⚙️</div><div class="sb-label">DASHBOARD ADMIN</div>
+                </a>
+            `;
+        }
+        dynamicMenu.innerHTML = menuHTML;
+        box.innerHTML = `<button class="btn-login" style="opacity:0.6; background:none; border:1px solid var(--muted)" onclick="logout()">LOGOUT</button>`;
+    } else {
+        title.textContent = 'MENU';
+        dynamicMenu.innerHTML = '';
+        box.innerHTML = `
+            <button class="btn-login" onclick="window.location.href='auth.html'">LOGIN</button>
+            <button class="btn-reg" onclick="window.location.href='auth.html'" style="margin-top:8px">REGISTER</button>
+        `;
+    }
+}
+
+function logout() {
+    localStorage.removeItem('namz_user');
+    localStorage.removeItem('namz_role');
+    window.location.reload(); 
+}
+
+// 3. SIDEBAR CONTROL
+function openSB() {
+    updateSBAuth();
+    document.getElementById('sidebar').classList.add('on');
+    document.getElementById('overlay').style.display = 'block';
+}
+
+function closeSB() {
+    document.getElementById('sidebar').classList.remove('on');
+    document.getElementById('overlay').style.display = 'none';
+}
+
+// 4. FILTER & SEARCH
+function buildFilters() {
+    if (!db || !db.products) return;
+    const cats = ['ALL', ...new Set(db.products.map(p => p.category))];
+    const row = document.getElementById('filterRow');
+    if (row) {
+        row.innerHTML = cats.map(c => `
+            <div class="ftab${c === activeFilter ? ' on' : ''}" onclick="setFilter(this,'${c}')">${c}</div>
+        `).join('');
+    }
+}
+
+function setFilter(el, cat) {
+    document.querySelectorAll('.ftab').forEach(t => t.classList.remove('on'));
+    el.classList.add('on');
+    activeFilter = cat;
+    applyFilters();
+}
+
+function applyFilters() {
+    const q = document.getElementById('searchInput')?.value.toLowerCase().trim() || "";
+    if (!db || !db.products) return;
+
+    let list = db.products.filter(p => p.active);
+    if (activeFilter !== 'ALL') list = list.filter(p => p.category === activeFilter);
+    if (q) list = list.filter(p => p.name.toLowerCase().includes(q));
+    
+    renderGrid(list);
+}
+
+// 5. RENDER PRODUCT GRID
+function renderGrid(list) {
+    const grid = document.getElementById('pgrid');
+    if (!grid) return;
+
+    if (!list.length) {
+        grid.innerHTML = '<div class="empty">// BELUM ADA PRODUK //</div>';
+        return;
+    }
+
+    const getMinPrice = p => {
+        if (!p.packages || p.packages.length === 0) return 0;
+        return Math.min(...p.packages.map(x => x.price));
+    };
+
+    grid.innerHTML = list.map(p => `
+        <div class="pcard" onclick="goProduct('${p.id}')">
+            <div class="pcard-thumb" style="background:${p.color}">
+                <div class="pcard-glow" style="background:radial-gradient(circle,${p.color}88,transparent)"></div>
+                <div class="pcard-emoji">${p.image ? `<img src="${p.image}" style="width:100%;height:100%;object-fit:cover;">` : '🔥'}</div>
+            </div>
+            <div class="pcard-badge">${p.category}</div>
+            <div class="pcard-plat">${p.platform}</div>
+            <div class="pcard-body">
+                <div class="pcard-name">${p.name}</div>
+                <div class="pcard-game">${p.packages.length} PAKET TERSEDIA</div>
+                <div class="pcard-price">mulai Rp ${getMinPrice(p).toLocaleString('id')}</div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function goProduct(id) {
+    localStorage.setItem('namz_product_id', id);
+    window.location.href = 'product.html';
+}
+
+// 6. STARTUP
+document.addEventListener('DOMContentLoaded', () => {
+    updateSBAuth();
+    initAppData();
+});
+
+// Listener Search
+document.getElementById('searchInput')?.addEventListener('input', applyFilters);
+</script>
+</body>
+</html>

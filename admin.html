@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard — NAMZ XITER</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --void:#04060f;--deep:#070c1a;--surface:#0c1220;--card:#101828;--raised:#141f30;
+  --border:#1c2a40;--border2:#243350;--accent:#00d4ff;--accent2:#0099cc;
+  --accent3:#00ff9d;--warn:#ff6b35;--danger:#ff3b3b;--success:#00ff9d;
+  --text:#e8f0fc;--muted:#6b80a0;--dim:#3d5070;
+  --font-head:'Rajdhani',sans-serif;--font-body:'Inter',sans-serif;--font-mono:'JetBrains Mono',monospace;
+}
+body{background:var(--void);color:var(--text);font-family:var(--font-body);min-height:100vh;display:flex;flex-direction:column}
+
+/* LOGIN SCREEN */
+#loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--void)}
+.login-box{background:var(--card);border:1px solid var(--border2);padding:40px;width:340px;text-align:center}
+.login-logo{font-family:var(--font-head);font-size:28px;font-weight:700;letter-spacing:4px;color:var(--accent);margin-bottom:4px}
+.login-sub{font-family:var(--font-mono);font-size:10px;letter-spacing:3px;color:var(--muted);margin-bottom:28px}
+.login-inp{width:100%;background:var(--deep);border:1px solid var(--border2);color:var(--text);padding:12px 14px;font-family:var(--font-mono);font-size:13px;outline:none;margin-bottom:12px;letter-spacing:2px}
+.login-inp:focus{border-color:var(--accent)}
+.login-btn{width:100%;background:var(--accent);color:var(--void);border:none;font-family:var(--font-head);font-size:16px;font-weight:700;letter-spacing:3px;padding:12px;cursor:pointer;transition:.2s}
+.login-btn:hover{background:var(--accent2)}
+.login-err{color:var(--danger);font-family:var(--font-mono);font-size:11px;margin-top:8px;display:none}
+
+/* ADMIN LAYOUT */
+#adminScreen{display:none;flex:1}
+.admin-nav{background:var(--deep);border-bottom:1px solid var(--border);height:56px;display:flex;align-items:center;padding:0 20px;justify-content:space-between;position:sticky;top:0;z-index:200}
+.admin-logo{font-family:var(--font-head);font-size:18px;font-weight:700;letter-spacing:3px;color:var(--accent)}
+.admin-logo span{color:var(--muted);font-size:12px;letter-spacing:2px;margin-left:6px}
+.nav-btns{display:flex;align-items:center;gap:8px}
+.nav-btn{font-family:var(--font-mono);font-size:10px;letter-spacing:1px;color:var(--muted);background:none;border:1px solid var(--border);padding:5px 12px;cursor:pointer;transition:.2s;text-decoration:none}
+.nav-btn:hover,.nav-btn.on{color:var(--accent);border-color:var(--accent)}
+.nav-btn.danger:hover{color:var(--danger);border-color:var(--danger)}
+
+.admin-body{display:flex;flex:1;min-height:calc(100vh - 56px)}
+.sidebar{width:200px;background:var(--deep);border-right:1px solid var(--border);padding:16px 0;flex-shrink:0}
+.sb-item{display:flex;align-items:center;gap:10px;padding:12px 16px;font-family:var(--font-head);font-size:13px;font-weight:600;letter-spacing:1px;color:var(--muted);cursor:pointer;border-left:2px solid transparent;transition:.2s}
+.sb-item:hover{color:var(--text);background:var(--card)}
+.sb-item.on{color:var(--accent);border-left-color:var(--accent);background:rgba(0,212,255,.05)}
+.sb-icon{font-size:14px;width:18px;text-align:center}
+.sb-divider{border-top:1px solid var(--border);margin:12px 0}
+
+.main-content{flex:1;padding:24px;overflow-y:auto;background:var(--void)}
+.page{display:none}
+.page.on{display:block}
+
+/* STATS CARDS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px}
+.stat-card{background:var(--card);border:1px solid var(--border);padding:16px}
+.stat-lbl{font-family:var(--font-mono);font-size:9px;letter-spacing:3px;color:var(--muted);margin-bottom:6px}
+.stat-val{font-family:var(--font-head);font-size:28px;font-weight:700}
+.stat-val.blue{color:var(--accent)}
+.stat-val.green{color:var(--accent3)}
+.stat-val.warn{color:var(--warn)}
+.stat-val.danger{color:var(--danger)}
+.stat-sub{font-family:var(--font-mono);font-size:9px;color:var(--dim);margin-top:4px}
+
+/* PAGE TITLE */
+.page-title{font-family:var(--font-head);font-size:22px;font-weight:700;letter-spacing:3px;color:var(--text);margin-bottom:20px;display:flex;align-items:center;justify-content:space-between}
+.action-btn{background:var(--accent);color:var(--void);border:none;font-family:var(--font-head);font-size:12px;font-weight:700;letter-spacing:2px;padding:8px 16px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:.2s}
+.action-btn:hover{background:var(--accent2)}
+.action-btn.danger{background:var(--danger)}
+.action-btn.danger:hover{background:#cc2222}
+.action-btn.warn{background:var(--warn)}
+
+/* TABLE */
+.table-wrap{background:var(--card);border:1px solid var(--border);overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{background:var(--surface);font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2px;color:var(--muted);padding:10px 14px;text-align:left;border-bottom:1px solid var(--border)}
+td{padding:10px 14px;font-family:var(--font-mono);font-size:11px;border-bottom:1px solid rgba(28,42,64,.5);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(0,212,255,.02)}
+.td-name{font-family:var(--font-head);font-size:15px;font-weight:700;letter-spacing:1px;color:var(--text)}
+.td-cat{font-size:9px;letter-spacing:2px;color:var(--accent);background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.15);padding:2px 8px;display:inline-block}
+.td-active{color:var(--accent3)}
+.td-inactive{color:var(--danger)}
+.td-actions{display:flex;gap:6px;flex-wrap:wrap}
+.tbl-btn{font-family:var(--font-mono);font-size:9px;letter-spacing:1px;padding:4px 10px;border:1px solid var(--border2);background:transparent;color:var(--muted);cursor:pointer;transition:.2s}
+.tbl-btn:hover{border-color:var(--accent);color:var(--accent)}
+.tbl-btn.red:hover{border-color:var(--danger);color:var(--danger)}
+.tbl-btn.green:hover{border-color:var(--accent3);color:var(--accent3)}
+
+/* BADGES */
+.badge{font-family:var(--font-mono);font-size:9px;letter-spacing:1px;padding:2px 8px;border-radius:2px;display:inline-block}
+.badge.success{background:rgba(0,255,157,.1);color:var(--accent3);border:1px solid rgba(0,255,157,.2)}
+.badge.danger{background:rgba(255,59,59,.1);color:var(--danger);border:1px solid rgba(255,59,59,.2)}
+.badge.warn{background:rgba(255,107,53,.1);color:var(--warn);border:1px solid rgba(255,107,53,.2)}
+.badge.info{background:rgba(0,212,255,.1);color:var(--accent);border:1px solid rgba(0,212,255,.2)}
+
+/* LICENSE STOCK */
+.stock-bar{display:flex;align-items:center;gap:8px}
+.stock-num{font-family:var(--font-head);font-size:18px;font-weight:700;color:var(--accent3)}
+.stock-num.low{color:var(--warn)}
+.stock-num.empty{color:var(--danger)}
+
+/* MODAL / DRAWER */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:500;align-items:center;justify-content:center;padding:16px}
+.modal-bg.open{display:flex}
+.modal{background:var(--deep);border:1px solid var(--border2);width:100%;max-width:600px;max-height:90vh;overflow-y:auto}
+.modal-head{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 20px;font-family:var(--font-head);font-size:16px;font-weight:700;letter-spacing:2px;color:var(--accent);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0}
+.modal-close{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:0 4px}
+.modal-body{padding:20px}
+
+/* FORMS */
+.form-group{margin-bottom:16px}
+.form-label{font-family:var(--font-mono);font-size:10px;letter-spacing:2px;color:var(--muted);margin-bottom:6px;display:block}
+.form-inp{width:100%;background:var(--card);border:1px solid var(--border2);color:var(--text);padding:10px 14px;font-family:var(--font-mono);font-size:12px;outline:none;transition:.2s}
+.form-inp:focus{border-color:var(--accent)}
+.form-inp::placeholder{color:var(--dim)}
+.form-textarea{width:100%;background:var(--card);border:1px solid var(--border2);color:var(--text);padding:10px 14px;font-family:var(--font-mono);font-size:12px;outline:none;resize:vertical;min-height:100px}
+.form-textarea:focus{border-color:var(--accent)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-select{width:100%;background:var(--card);border:1px solid var(--border2);color:var(--text);padding:10px 14px;font-family:var(--font-mono);font-size:12px;outline:none;cursor:pointer}
+.form-select:focus{border-color:var(--accent)}
+.form-btns{display:flex;gap:10px;margin-top:20px;border-top:1px solid var(--border);padding-top:16px}
+.form-save{flex:1;background:var(--accent);color:var(--void);border:none;font-family:var(--font-head);font-size:15px;font-weight:700;letter-spacing:2px;padding:12px;cursor:pointer;transition:.2s}
+.form-save:hover{background:var(--accent2)}
+.form-cancel{background:transparent;border:1px solid var(--border2);color:var(--muted);font-family:var(--font-head);font-size:14px;font-weight:600;letter-spacing:1px;padding:12px 20px;cursor:pointer}
+.toggle-switch{display:flex;align-items:center;gap:10px}
+.switch{position:relative;display:inline-block;width:44px;height:24px}
+.switch input{opacity:0;width:0;height:0}
+.slider{position:absolute;cursor:pointer;inset:0;background:var(--border2);transition:.3s;border-radius:2px}
+.slider:before{content:'';position:absolute;height:18px;width:18px;left:3px;bottom:3px;background:var(--muted);transition:.3s}
+input:checked+.slider{background:var(--accent)}
+input:checked+.slider:before{transform:translateX(20px);background:var(--void)}
+.switch-lbl{font-family:var(--font-mono);font-size:11px;color:var(--muted)}
+
+/* LICENSE TEXTAREA */
+.lic-textarea{width:100%;background:var(--card);border:1px solid var(--border2);color:var(--accent3);padding:10px 14px;font-family:var(--font-mono);font-size:11px;outline:none;resize:vertical;min-height:140px;letter-spacing:1px;line-height:2}
+.lic-textarea:focus{border-color:var(--accent3)}
+.lic-note{font-family:var(--font-mono);font-size:9px;color:var(--dim);margin-top:4px}
+
+/* PACKAGE ROW */
+.pkg-row{background:var(--surface);border:1px solid var(--border);padding:12px 14px;margin-bottom:8px}
+.pkg-row-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.pkg-row-title{font-family:var(--font-head);font-size:14px;font-weight:600;letter-spacing:1px;color:var(--text)}
+.pkg-row-stock{font-family:var(--font-mono);font-size:10px;color:var(--accent3)}
+.remove-pkg{background:none;border:none;color:var(--danger);cursor:pointer;font-size:14px;padding:2px 6px}
+
+/* ORDERS TABLE */
+.order-lbl{font-size:11px;font-family:var(--font-mono)}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--surface);border:1px solid var(--border2);padding:12px 20px;font-family:var(--font-mono);font-size:12px;z-index:9999;opacity:0;transform:translateY(10px);transition:.3s;pointer-events:none}
+.toast.success{border-color:var(--accent3);color:var(--accent3)}
+.toast.danger{border-color:var(--danger);color:var(--danger)}
+.toast.show{opacity:1;transform:translateY(0)}
+
+/* ACTIVITY LOG */
+.log-item{border-bottom:1px solid var(--border);padding:10px 0;display:flex;justify-content:space-between;align-items:center}
+.log-item:last-child{border-bottom:none}
+.log-txt{font-family:var(--font-mono);font-size:11px;color:var(--text)}
+.log-time{font-family:var(--font-mono);font-size:10px;color:var(--dim)}
+
+/* SETTINGS */
+.settings-sec{background:var(--card);border:1px solid var(--border);padding:20px;margin-bottom:20px}
+.settings-title{font-family:var(--font-head);font-size:15px;font-weight:700;letter-spacing:2px;color:var(--accent);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.midtrans-note{background:rgba(0,212,255,.04);border:1px solid rgba(0,212,255,.12);padding:12px;font-family:var(--font-mono);font-size:10px;color:var(--muted);line-height:1.9;margin-top:12px}
+.midtrans-note strong{color:var(--accent)}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .sidebar{display:none}
+  .form-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">NAMZ XITER</div>
+    <div class="login-sub">ADMIN DASHBOARD</div>
+    <input class="login-inp" id="passInput" type="password" placeholder="PASSWORD ADMIN" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">MASUK</button>
+    <div class="login-err" id="loginErr">Password salah!</div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="adminScreen" style="display:none;flex-direction:column">
+  <nav class="admin-nav">
+    <div>
+      <span class="admin-logo">NAMZ XITER <span>ADMIN PANEL</span></span>
+    </div>
+    <div class="nav-btns">
+      <a href="index.html" class="nav-btn" target="_blank">↗ LIHAT TOKO</a>
+      <button class="nav-btn danger" onclick="adminLogout()">LOGOUT</button>
+    </div>
+  </nav>
+
+  <div class="admin-body">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sb-item on" onclick="showPage('dashboard',this)"><span class="sb-icon">📊</span>Dashboard</div>
+      <div class="sb-item" onclick="showPage('products',this)"><span class="sb-icon">📦</span>Produk</div>
+      <div class="sb-item" onclick="showPage('licenses',this)"><span class="sb-icon">🔑</span>Lisensi</div>
+      <div class="sb-item" onclick="showPage('orders',this)"><span class="sb-icon">🛒</span>Pesanan</div>
+      <div class="sb-divider"></div>
+      <div class="sb-item" onclick="showPage('settings',this)"><span class="sb-icon">⚙️</span>Pengaturan</div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main-content">
+
+      <!-- DASHBOARD -->
+      <div class="page on" id="page-dashboard">
+        <div class="page-title">DASHBOARD</div>
+        <div class="stats-grid" id="statsGrid"></div>
+        <div class="page-title" style="font-size:16px;margin-bottom:12px">PESANAN TERBARU</div>
+        <div class="table-wrap" id="recentOrders"></div>
+      </div>
+
+      <!-- PRODUCTS -->
+      <div class="page" id="page-products">
+        <div class="page-title">
+          <span>KELOLA PRODUK</span>
+          <button class="action-btn" onclick="openAddProduct()">+ TAMBAH PRODUK</button>
+        </div>
+        <div class="table-wrap" id="productsTable"></div>
+      </div>
+
+      <!-- LICENSES -->
+      <div class="page" id="page-licenses">
+        <div class="page-title">KELOLA LISENSI</div>
+        <div id="licensesContent"></div>
+      </div>
+
+      <!-- ORDERS -->
+      <div class="page" id="page-orders">
+        <div class="page-title">
+          <span>SEMUA PESANAN</span>
+          <button class="action-btn danger" onclick="clearOrders()">🗑 HAPUS SEMUA</button>
+        </div>
+        <div class="table-wrap" id="ordersTable"></div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div class="page" id="page-settings">
+        <div class="page-title">PENGATURAN</div>
+
+        <div class="settings-sec">
+          <div class="settings-title">INFO TOKO</div>
+          <div class="form-group">
+            <label class="form-label">NAMA TOKO</label>
+            <input class="form-inp" id="s-shopName" type="text">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">NOMOR WHATSAPP</label>
+              <input class="form-inp" id="s-waNumber" type="text" placeholder="628xxx">
+            </div>
+            <div class="form-group">
+              <label class="form-label">USERNAME TELEGRAM</label>
+              <input class="form-inp" id="s-tgUsername" type="text" placeholder="tanpa @">
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-sec">
+  <div class="settings-title">PAKASIR INTEGRATION</div>
+  <div class="form-group">
+    <label class="form-label">PAKASIR API KEY</label>
+    <input class="form-inp" id="s-pakasirApiKey" type="password" placeholder="Masukkan API Key Pakasir Anda">
+  </div>
+  <div class="form-group">
+    <label class="form-label">MERCHANT ID / SERVICE ID</label>
+    <input class="form-inp" id="s-pakasirMerchantId" type="text" placeholder="ID Merchant Pakasir">
+  </div>
+  <div class="midtrans-note">
+    <strong>CARA SETUP PAKASIR:</strong><br>
+    1. Login ke dashboard <strong>pakasir.com</strong><br>
+    2. Buka menu Integrasi/API Key.<br>
+    3. Masukkan API Key dan Merchant ID ke kolom di atas.<br>
+    4. Pastikan Callback URL di Pakasir sudah mengarah ke backend Anda.
+  </div>
+</div>
+
+        <div class="settings-sec">
+          <div class="settings-title">KEAMANAN</div>
+          <div class="form-group">
+            <label class="form-label">PASSWORD ADMIN BARU</label>
+            <input class="form-inp" id="s-adminPassword" type="password" placeholder="Kosongkan jika tidak ingin ubah">
+          </div>
+        </div>
+
+        <button class="action-btn" onclick="saveSettings()" style="width:100%;padding:14px;justify-content:center;font-size:16px">💾 SIMPAN PENGATURAN</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- PRODUCT MODAL -->
+ <div class="modal-bg" id="productModal">
+  <div class="modal">
+    <div class="modal-head">
+      <span id="productModalTitle">MANAJEMEN PRODUK</span>
+      <button class="modal-close" onclick="closeModal('productModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="pm-id">
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">NAMA PRODUK</label>
+          <input class="form-inp" id="pm-name" type="text" placeholder="Misal: NAMZ VIP">
+        </div>
+        <div class="form-group">
+          <label class="form-label">KATEGORI / GAME</label>
+          <input class="form-inp" id="pm-category" type="text" placeholder="Misal: Free Fire">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">PLATFORM</label>
+          <select class="form-select" id="pm-platform">
+            <option value="ANDROID">ANDROID</option>
+            <option value="iOS">iOS</option>
+            <option value="PC">PC</option>
+            <option value="ALL DEVICE">ALL DEVICE</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">THUMBNAIL</label>
+          <div style="display:flex; gap:10px; align-items:center">
+             <div id="image-preview" style="width:45px; height:45px; border:1px dashed var(--border); border-radius:8px; display:flex; align-items:center; justify-content:center; overflow:hidden; background:var(--deep)">
+                <span style="font-size:9px; color:var(--muted)">IMG</span>
+             </div>
+             <input type="file" accept="image/*" onchange="previewImage(this)" style="font-size:11px">
+             <input type="hidden" id="p-image-data">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">WARNA KARTU (HEX)</label>
+          <input class="form-inp" id="pm-color" type="text" placeholder="#00d4ff">
+        </div>
+        <div class="form-group" style="display:flex; align-items:flex-end; padding-bottom:10px">
+           <label class="switch">
+              <input type="checkbox" id="pm-active" checked>
+              <span class="slider"></span>
+           </label>
+           <span style="margin-left:10px; font-size:12px; color:var(--text)">AKTIFKAN PRODUK</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">DESKRIPSI</label>
+        <textarea class="form-textarea" id="pm-desc" placeholder="Fitur-fitur cheat..."></textarea>
+      </div>
+
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px">
+        <label class="form-label" style="margin:0">PAKET & HARGA</label>
+        <button class="tbl-btn green" onclick="addPkgRow()">+ Tambah Paket</button>
+      </div>
+      
+      <div id="pkgRows"></div>
+
+      <div class="form-btns">
+        <button class="form-cancel" onclick="closeModal('productModal')">BATAL</button>
+        <button class="form-save" onclick="saveProduct()">SIMPAN PRODUK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="licenseModal">
+  <div class="modal">
+    <div class="modal-head">
+      <span>KELOLA LISENSI</span>
+      <button class="modal-close" onclick="closeModal('licenseModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="lm-prodId">
+      <input type="hidden" id="lm-pkgId">
+      <div class="form-group">
+        <label class="form-label">DAFTAR LISENSI (1 PER BARIS)</label>
+        <textarea class="lic-textarea" id="lm-licenses" style="height:150px; font-family:monospace"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">⚡ QUICK GENERATOR</label>
+        <div style="display:flex;gap:8px">
+          <input class="form-inp" id="lm-prefix" type="text" placeholder="PREFIX" style="width:100px">
+          <input class="form-inp" id="lm-genQty" type="number" value="5" style="width:70px">
+          <button class="tbl-btn green" onclick="generateLicenses()">GENERATE</button>
+        </div>
+      </div>
+      <div class="form-btns">
+        <button class="form-cancel" onclick="closeModal('licenseModal')">BATAL</button>
+        <button class="form-save" onclick="saveLicenses()">SIMPAN LISENSI</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LICENSE MODAL -->
+<div class="modal-bg" id="licenseModal">
+  <div class="modal">
+    <div class="modal-head">
+      <span id="licModalTitle">KELOLA LISENSI</span>
+      <button class="modal-close" onclick="closeModal('licenseModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="lm-prodId">
+      <input type="hidden" id="lm-pkgId">
+      <div class="form-group">
+        <label class="form-label">PAKET</label>
+        <input class="form-inp" id="lm-pkgLabel" type="text" readonly style="color:var(--accent3)">
+      </div>
+      <div class="form-group">
+        <label class="form-label">DAFTAR LISENSI (1 LISENSI PER BARIS)</label>
+        <textarea class="lic-textarea" id="lm-licenses" placeholder="XXXX-XXXX-XXXX-XXXX&#10;YYYY-YYYY-YYYY-YYYY&#10;ZZZZ-ZZZZ-ZZZZ-ZZZZ"></textarea>
+        <div class="lic-note">⚠ Lisensi yang sudah terpakai tidak akan ditampilkan di sini. Hanya lisensi tersedia.</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">GENERATOR LISENSI OTOMATIS</label>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input class="form-inp" id="lm-prefix" type="text" placeholder="PREFIX (mis: DRIP)" style="width:150px">
+          <input class="form-inp" id="lm-genQty" type="number" value="10" min="1" max="100" style="width:80px">
+          <button class="tbl-btn green" onclick="generateLicenses()" style="white-space:nowrap">⚡ GENERATE</button>
+        </div>
+      </div>
+      <div class="form-btns">
+        <button class="form-cancel" onclick="closeModal('licenseModal')">BATAL</button>
+        <button class="form-save" onclick="saveLicenses()">SIMPAN LISENSI</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+<script>// Variabel global untuk menampung data dari server
+let db = { products: [], orders: [], settings: {} };
+let currentEditId = null;
+let pkgRowCounter = 0;
+
+// ===== SYNC KE SERVER (API) =====
+async function loadAll() {
+  try {
+    const res = await fetch('/api/db');
+    db = await res.json();
+    renderDashboard();
+    renderProducts();
+    renderLicenses();
+    renderOrders();
+    loadSettings();
+  } catch (err) {
+    console.error("Gagal load data server:", err);
+    toast('Gagal terhubung ke server!', 'danger');
+  }
+}
+
+async function saveDB(newDb) {
+  try {
+    const res = await fetch('/api/db', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newDb)
+    });
+    if (res.ok) {
+      db = newDb;
+      return true;
+    }
+    return false;
+  } catch (err) {
+    toast('Koneksi server terputus!', 'danger');
+    return false;
+  }
+}
+
+// ===== UPLOAD GAMBAR LOGIC =====
+function previewImage(input) {
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById('image-preview').innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;">`;
+      document.getElementById('p-image-data').value = e.target.result;
+    }
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+// ===== LOGIN & AUTH =====
+async function doLogin() {
+  const pass = document.getElementById('passInput').value;
+  try {
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: 'admin', password: pass })
+    });
+    const data = await res.json();
+
+    if (res.ok && data.role === 'admin') {
+      localStorage.setItem('namz_admin', '1');
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('adminScreen').style.display = 'flex';
+      loadAll();
+    } else {
+      const errEl = document.getElementById('loginErr');
+      errEl.style.display = 'block';
+      errEl.textContent = "Password Salah!";
+    }
+  } catch (err) {
+    alert("Gagal koneksi ke server");
+  }
+}
+
+function adminLogout() {
+  localStorage.removeItem('namz_admin');
+  window.location.reload();
+}
+
+// ===== TOAST NOTIFICATION =====
+function toast(msg, type = 'success') {
+  const t = document.createElement('div');
+  t.className = `toast ${type} show`;
+  t.style.position = 'fixed';
+  t.style.bottom = '20px';
+  t.style.right = '20px';
+  t.style.zIndex = '9999';
+  t.style.padding = '12px 20px';
+  t.style.borderRadius = '8px';
+  t.style.background = type === 'success' ? 'var(--success)' : 'var(--danger)';
+  t.style.color = '#000';
+  t.style.fontWeight = 'bold';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+// ===== NAVIGATION =====
+function showPage(name, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('on'));
+  const target = document.getElementById('page-' + name);
+  if(target) target.classList.add('on');
+  if(el) el.classList.add('on');
+  
+  if (name === 'dashboard') renderDashboard();
+  if (name === 'products') renderProducts();
+  if (name === 'licenses') renderLicenses();
+  if (name === 'orders') renderOrders();
+  if (name === 'settings') loadSettings();
+}
+
+// ===== DASHBOARD STATS =====
+function renderDashboard() {
+  const totalProd = db.products.filter(p => p.active).length;
+  const totalOrders = db.orders.length;
+  const totalRev = db.orders.reduce((a, o) => a + (o.price || 0), 0);
+  const totalLic = db.products.reduce((a, p) => a + p.packages.reduce((b, pkg) => b + (pkg.licenses ? pkg.licenses.length : 0), 0), 0);
+
+  document.getElementById('statsGrid').innerHTML = `
+    <div class="stat-card"><div class="stat-lbl">PRODUK AKTIF</div><div class="stat-val" style="color:var(--accent)">${totalProd}</div></div>
+    <div class="stat-card"><div class="stat-lbl">TOTAL PESANAN</div><div class="stat-val" style="color:var(--success)">${totalOrders}</div></div>
+    <div class="stat-card"><div class="stat-lbl">REVENUE</div><div class="stat-val" style="color:var(--warn)">Rp ${totalRev.toLocaleString('id')}</div></div>
+    <div class="stat-card"><div class="stat-lbl">STOK LISENSI</div><div class="stat-val" style="color:${totalLic < 5 ? 'var(--danger)' : 'var(--success)'}">${totalLic}</div></div>
+  `;
+}
+
+// ===== PRODUCT MANAGEMENT =====
+function renderProducts() {
+  const el = document.getElementById('productsTable');
+  el.innerHTML = `<table>
+    <thead><tr><th>IMG</th><th>NAMA</th><th>KATEGORI</th><th>PAKET</th><th>STATUS</th><th>AKSI</th></tr></thead>
+    <tbody>${db.products.map(p => `
+      <tr>
+        <td>
+          <div style="width:35px; height:35px; border-radius:6px; overflow:hidden; background:var(--raised); display:flex; align-items:center; justify-content:center;">
+            ${p.image ? `<img src="${p.image}" style="width:100%;height:100%;object-fit:cover;">` : '<span style="font-size:10px">N/A</span>'}
+          </div>
+        </td>
+        <td><span class="td-name">${p.name}</span></td>
+        <td><span class="td-cat">${p.category}</span></td>
+        <td>${p.packages.length} paket</td>
+        <td><span class="badge ${p.active ? 'success' : 'danger'}">${p.active ? 'AKTIF' : 'OFF'}</span></td>
+        <td>
+          <div class="td-actions">
+            <button class="tbl-btn" onclick="openEditProduct('${p.id}')">✏</button>
+            <button class="tbl-btn red" onclick="deleteProduct('${p.id}')">🗑</button>
+          </div>
+        </td>
+      </tr>
+    `).join('')}</tbody>
+  </table>`;
+}
+
+function openAddProduct() {
+  currentEditId = null;
+  document.getElementById('pm-name').value = '';
+  document.getElementById('pm-category').value = '';
+  document.getElementById('pm-desc').value = '';
+  document.getElementById('p-image-data').value = '';
+  document.getElementById('image-preview').innerHTML = '<span style="font-size:10px; color:var(--muted)">Preview</span>';
+  document.getElementById('pkgRows').innerHTML = '';
+  pkgRowCounter = 0;
+  addPkgRow();
+  document.getElementById('productModal').classList.add('open');
+}
+
+function openEditProduct(id) {
+  const p = db.products.find(x => x.id === id);
+  if (!p) return;
+  currentEditId = id;
+  document.getElementById('pm-name').value = p.name;
+  document.getElementById('pm-category').value = p.category;
+  document.getElementById('pm-desc').value = p.desc || '';
+  document.getElementById('p-image-data').value = p.image || '';
+  
+  if(p.image) {
+    document.getElementById('image-preview').innerHTML = `<img src="${p.image}" style="width:100%;height:100%;object-fit:cover;">`;
+  } else {
+    document.getElementById('image-preview').innerHTML = '<span style="font-size:10px; color:var(--muted)">Preview</span>';
+  }
+
+  document.getElementById('pkgRows').innerHTML = '';
+  pkgRowCounter = 0;
+  p.packages.forEach(pkg => addPkgRow(pkg));
+  document.getElementById('productModal').classList.add('open');
+}
+
+function addPkgRow(pkg = null) {
+  pkgRowCounter++;
+  const id = 'row-' + pkgRowCounter;
+  const div = document.createElement('div');
+  div.className = 'pkg-row';
+  div.id = id;
+  div.style = "display:flex; gap:8px; margin-bottom:8px;";
+  div.innerHTML = `
+    <input class="form-inp pkg-label" type="text" value="${pkg ? pkg.label : ''}" placeholder="Durasi (1 Day)" style="flex:2">
+    <input class="form-inp pkg-price" type="number" value="${pkg ? pkg.price : ''}" placeholder="Harga" style="flex:1">
+    <input type="hidden" class="pkg-id" value="${pkg ? pkg.id : ''}">
+    <button class="tbl-btn red" onclick="document.getElementById('${id}').remove()">✕</button>
+  `;
+  document.getElementById('pkgRows').appendChild(div);
+}
+
+async function saveProduct() {
+  const name = document.getElementById('pm-name').value.trim();
+  const category = document.getElementById('pm-category').value.trim();
+  
+  if (!name || !category) return toast('Nama dan Kategori wajib diisi!', 'danger');
+
+  const rows = document.querySelectorAll('.pkg-row');
+  const packages = [];
+
+  rows.forEach(row => {
+    const pId = row.querySelector('.pkg-id').value || 'pkg-' + Date.now() + Math.random().toString(36).substr(2, 5);
+    const label = row.querySelector('.pkg-label').value;
+    const price = parseInt(row.querySelector('.pkg-price').value) || 0;
+
+    // Pertahankan lisensi lama jika sedang mode edit
+    let oldLicenses = [];
+    if (currentEditId) {
+      const prod = db.products.find(p => p.id === currentEditId);
+      const pkgOld = prod?.packages.find(pk => pk.id === row.querySelector('.pkg-id').value);
+      if (pkgOld) oldLicenses = pkgOld.licenses || [];
+    }
+
+    if (label) {
+      packages.push({ id: pId, label, price, licenses: oldLicenses });
+    }
+  });
+
+  if (packages.length === 0) return toast('Tambahkan minimal 1 paket!', 'danger');
+
+  const productData = {
+    id: currentEditId || 'p-' + Date.now(),
+    name: name,
+    category: category,
+    platform: document.getElementById('pm-platform').value,
+    color: document.getElementById('pm-color').value || '#00d4ff',
+    image: document.getElementById('p-image-data').value,
+    desc: document.getElementById('pm-desc').value,
+    active: document.getElementById('pm-active').checked,
+    packages: packages
+  };
+
+  // Update Array Local
+  if (currentEditId) {
+    const index = db.products.findIndex(p => p.id === currentEditId);
+    if (index !== -1) db.products[index] = productData;
+  } else {
+    db.products.push(productData);
+  }
+
+  // Kirim ke server via function saveDB yang sudah ada
+  const success = await saveDB(db);
+  if (success) {
+    toast('Produk Berhasil Disimpan!');
+    closeModal('productModal');
+    renderProducts();
+    renderDashboard();
+  } else {
+    toast('Gagal menyimpan ke server!', 'danger');
+  }
+}
+
+async function deleteProduct(id) {
+  if (!confirm('Hapus produk ini secara permanen?')) return;
+  db.products = db.products.filter(p => p.id !== id);
+  if (await saveDB(db)) {
+    toast('Produk dihapus');
+    renderProducts();
+  }
+}
+
+// ===== LICENSE MANAGEMENT & GENERATOR =====
+function renderLicenses() {
+  const el = document.getElementById('licensesContent');
+  if(!db.products.length) { el.innerHTML = "Belum ada produk."; return; }
+  
+  el.innerHTML = db.products.map(p => `
+    <div style="margin-bottom:15px; background:var(--card); padding:12px; border-radius:8px; border:1px solid var(--border)">
+      <div style="font-weight:bold; color:var(--accent); margin-bottom:8px">${p.name}</div>
+      ${p.packages.map(pkg => `
+        <div style="display:flex; justify-content:space-between; align-items:center; font-size:13px; margin-top:5px; padding:4px 0; border-top:1px solid var(--raised)">
+          <span>${pkg.label} <small style="color:var(--muted)">(Stok: ${pkg.licenses ? pkg.licenses.length : 0})</small></span>
+          <button class="tbl-btn" style="padding:2px 8px" onclick="openLicenseModal('${p.id}','${pkg.id}')">🔑 KELOLA</button>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+}
+
+function openLicenseModal(prodId, pkgId) {
+  const p = db.products.find(x => x.id === prodId);
+  const pkg = p.packages.find(x => x.id === pkgId);
+  document.getElementById('lm-prodId').value = prodId;
+  document.getElementById('lm-pkgId').value = pkgId;
+  document.getElementById('lm-licenses').value = (pkg.licenses || []).join('\n');
+  document.getElementById('licenseModal').classList.add('open');
+}
+
+function generateLicenses() {
+    const prefix = document.getElementById('lm-prefix').value.toUpperCase() || "KEY";
+    const qty = parseInt(document.getElementById('lm-genQty').value) || 5;
+    const area = document.getElementById('lm-licenses');
+    
+    let keys = [];
+    for(let i=0; i<qty; i++) {
+        const rand = Math.random().toString(36).substr(2, 8).toUpperCase();
+        keys.push(`${prefix}-${rand}`);
+    }
+    const current = area.value.trim();
+    area.value = current ? current + "\n" + keys.join("\n") : keys.join("\n");
+    toast(`${qty} Lisensi dibuat`);
+}
+
+async function saveLicenses() {
+  const prodId = document.getElementById('lm-prodId').value;
+  const pkgId = document.getElementById('lm-pkgId').value;
+  const raw = document.getElementById('lm-licenses').value;
+  const list = raw.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+  
+  const p = db.products.find(x => x.id === prodId);
+  const pkg = p.packages.find(x => x.id === pkgId);
+  pkg.licenses = list;
+  
+  if (await saveDB(db)) { 
+    toast('Stok Lisensi Diperbarui!'); 
+    closeModal('licenseModal'); 
+    renderLicenses(); 
+    renderDashboard();
+  }
+}
+
+// ===== ORDER HISTORY & CLEAR =====
+function renderOrders() {
+  const el = document.getElementById('ordersTable');
+  const sorted = [...db.orders].reverse();
+  el.innerHTML = `<table>
+    <thead><tr><th>ID ORDER</th><th>PRODUK</th><th>PEMBELI</th><th>LISENSI</th></tr></thead>
+    <tbody>${sorted.map(o => `
+      <tr>
+        <td style="font-size:11px; font-family:monospace">${o.id}</td>
+        <td>${o.productName}</td>
+        <td>${o.buyer}</td>
+        <td style="color:var(--accent); font-family:monospace; font-size:12px">${o.license || 'PENDING'}</td>
+      </tr>
+    `).join('')}</tbody>
+  </table>`;
+}
+
+async function clearOrders() {
+    if(!confirm("Hapus semua riwayat pesanan? Tindakan ini tidak bisa dibatalkan.")) return;
+    db.orders = [];
+    if(await saveDB(db)) {
+        toast("Riwayat pesanan dikosongkan");
+        renderOrders();
+        renderDashboard();
+    }
+}
+
+// ===== SETTINGS MANAGEMENT =====
+function loadSettings() {
+  const s = db.settings || {};
+  if(document.getElementById('s-shopName')) document.getElementById('s-shopName').value = s.shopName || '';
+  if(document.getElementById('s-waNumber')) document.getElementById('s-waNumber').value = s.waNumber || '';
+  if(document.getElementById('s-pakasirMerchantId')) document.getElementById('s-pakasirMerchantId').value = s.pakasirMerchantId || '';
+  if(document.getElementById('s-pakasirApiKey')) document.getElementById('s-pakasirApiKey').value = s.pakasirApiKey || '';
+}
+
+async function saveSettings() {
+  db.settings.shopName = document.getElementById('s-shopName').value;
+  db.settings.waNumber = document.getElementById('s-waNumber').value;
+  db.settings.pakasirMerchantId = document.getElementById('s-pakasirMerchantId').value;
+  db.settings.pakasirApiKey = document.getElementById('s-pakasirApiKey').value;
+  
+  if (await saveDB(db)) toast('Pengaturan Tersimpan!');
+}
+
+// ===== INITIALIZE =====
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (localStorage.getItem('namz_admin') === '1') {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminScreen').style.display = 'flex';
+    loadAll();
+  }
+});
+</script>
+</body>
+</html>

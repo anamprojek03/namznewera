@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Akses Sistem — NAMZ XITER</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --void: #04060f; --surface: #0c1220; --accent: #00d4ff;
+            --border: #1c2a40; --text: #e8f0fc;
+            --font-head: 'Rajdhani', sans-serif; --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        body {
+            margin: 0; background: var(--void); color: var(--text);
+            font-family: var(--font-mono); display: flex;
+            justify-content: center; align-items: center; height: 100vh; overflow: hidden;
+            background-image: radial-gradient(circle at 2px 2px, rgba(0, 212, 255, 0.05) 1px, transparent 0);
+            background-size: 40px 40px;
+        }
+
+        .auth-container {
+            width: 350px; background: rgba(12, 18, 32, 0.9);
+            border: 1px solid var(--border); border-top: 3px solid var(--accent);
+            border-radius: 12px; padding: 40px 30px; backdrop-filter: blur(10px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5); position: relative;
+        }
+
+        .admin-hint {
+            position: absolute; top: -15px; right: 20px; background: var(--void);
+            padding: 2px 10px; border: 1px solid var(--border);
+            font-size: 10px; color: var(--accent); border-radius: 4px; text-transform: uppercase;
+        }
+
+        .auth-header { text-align: center; margin-bottom: 30px; }
+        .auth-header h2 { 
+            font-family: var(--font-head); font-size: 2rem; color: var(--accent); 
+            margin: 0; letter-spacing: 3px; 
+        }
+        .auth-header p { font-size: 0.85rem; color: #6b80a0; margin-top: 5px; }
+
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; font-size: 0.7rem; color: var(--accent); margin-bottom: 8px; }
+        
+        input {
+            width: 100%; padding: 12px; background: #141f30; border: 1px solid var(--border);
+            border-radius: 6px; color: white; font-family: var(--font-mono); box-sizing: border-box;
+        }
+        input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 10px rgba(0, 212, 255, 0.2); }
+
+        button {
+            width: 100%; padding: 14px; background: var(--accent); color: var(--void);
+            border: none; border-radius: 6px; font-family: var(--font-head);
+            font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: 0.3s;
+        }
+        button:hover { background: #fff; transform: translateY(-2px); }
+
+        .toggle-btn {
+            display: block; text-align: center; margin-top: 20px;
+            font-size: 0.8rem; color: #6b80a0; cursor: pointer;
+        }
+        .toggle-btn:hover { color: var(--accent); }
+    </style>
+</head>
+<body>
+
+    <div class="auth-container">
+        <div class="admin-hint" id="roleBadge">USER MODE</div>
+        <div class="auth-header">
+            <h2 id="authTitle">LOGIN</h2>
+            <p id="authSub">Silakan masuk ke sistem</p>
+        </div>
+
+        <div class="input-group">
+            <label>USERNAME</label>
+            <input type="text" id="username" placeholder="Nama / Admin" autocomplete="off">
+        </div>
+
+        <div class="input-group">
+            <label>PASSWORD</label>
+            <input type="password" id="password" placeholder="••••••••">
+        </div>
+
+        <button onclick="handleAuth()" id="btnAuth">MASUK SEKARANG</button>
+        
+        <span class="toggle-btn" onclick="toggleAuth()" id="toggleText">
+            Belum punya akun? [ DAFTAR DISINI ]
+        </span>
+    </div>
+<script>
+    let isLogin = true;
+
+    // 1. Toggle antara Mode Login dan Daftar
+    function toggleAuth() {
+        isLogin = !isLogin;
+        const title = document.getElementById('authTitle');
+        const desc = document.getElementById('authDesc');
+        const btn = document.getElementById('btnAuth');
+        const toggle = document.getElementById('toggleText');
+        const badge = document.getElementById('roleBadge');
+
+        title.textContent = isLogin ? 'LOGIN SYSTEM' : 'REGISTER ACCOUNT';
+        desc.textContent = isLogin ? 'Silakan masuk ke akun kamu' : 'Buat akun baru untuk akses panel';
+        btn.textContent = isLogin ? 'MASUK SEKARANG' : 'DAFTAR SEKARANG';
+        badge.textContent = isLogin ? 'USER MODE' : 'REGISTRASI';
+        toggle.textContent = isLogin ? 'Belum punya akun? [ DAFTAR DISINI ]' : 'Sudah punya akun? [ LOGIN DISINI ]';
+    }
+
+    // 2. Fungsi Utama Auth (Koneksi ke server.js)
+    async function handleAuth() {
+        const user = document.getElementById('username').value.trim();
+        const pass = document.getElementById('password').value.trim();
+        const btn = document.getElementById('btnAuth');
+
+        if (!user || !pass) {
+            alert('Username dan Password wajib diisi!');
+            return;
+        }
+
+        // Tampilkan loading di tombol
+        btn.textContent = "PROCESSING...";
+        btn.disabled = true;
+
+        const endpoint = isLogin ? '/api/login' : '/api/register';
+
+        try {
+            const res = await fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: user, password: pass })
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                // SIMPAN SESSION KE BROWSER
+                localStorage.setItem('namz_user', data.user);
+                localStorage.setItem('namz_role', data.role); // 'user' atau 'admin'
+
+                alert(data.message);
+                
+                // Redirect ke halaman utama
+                window.location.replace('index.html');
+            } else {
+                alert("Gagal: " + data.message);
+                btn.textContent = isLogin ? 'MASUK SEKARANG' : 'DAFTAR SEKARANG';
+                btn.disabled = false;
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Terjadi kesalahan koneksi ke server.");
+            btn.disabled = false;
+        }
+    }
+
+    // Listener Enter Key
+    document.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleAuth();
+    });
+</script>
+</body>
+</html>
